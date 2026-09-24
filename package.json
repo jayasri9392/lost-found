@@ -9,7 +9,8 @@
     "server:dev": "npm run dev --prefix server",
     "client:build": "npm run build --prefix client",
     "server:start": "npm run start --prefix server",
-    "test:server": "npm run test:auth --prefix server"
+    "test:server": "npm run test:auth --prefix server",
+    "test:prod": "npm run test:prod --prefix server"
   },
   "keywords": [
     "lost-and-found",
