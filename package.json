@@ -1,0 +1,25 @@
+{
+  "name": "lost-found-project-fsd",
+  "version": "1.0.0",
+  "description": "Intelligent Lost & Found Network (ILFN) - Full Stack MERN Application",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix server && npm install --prefix client",
+    "client:dev": "npm run dev --prefix client",
+    "server:dev": "npm run dev --prefix server",
+    "client:build": "npm run build --prefix client",
+    "server:start": "npm run start --prefix server",
+    "test:server": "npm run test:auth --prefix server"
+  },
+  "keywords": [
+    "lost-and-found",
+    "mern",
+    "react",
+    "express",
+    "mongodb-atlas",
+    "vite",
+    "tailwind"
+  ],
+  "author": "ILFN Development Team",
+  "license": "ISC"
+}
