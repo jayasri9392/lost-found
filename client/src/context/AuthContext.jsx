@@ -16,29 +16,53 @@ export const AuthProvider = ({ children }) => {
 
   // Verify stored session on app mount
   useEffect(() => {
+    let isMounted = true;
+
     const initializeAuth = async () => {
       const storedToken = authService.getToken();
+      const storedUser = authService.getUser();
+
       if (storedToken) {
         try {
           const res = await authService.getMe();
-          if (res.success && res.data) {
-            setUser(res.data);
-            authService.saveSession(storedToken, res.data);
-          } else {
-            handleLogout();
+          if (isMounted) {
+            if (res.success && res.data) {
+              setUser(res.data);
+              authService.saveSession(storedToken, res.data);
+            } else {
+              handleLogout();
+            }
           }
         } catch (err) {
-          console.error('[AuthContext] Session expired or invalid:', err.message);
-          handleLogout();
+          // Only clear session if explicitly unauthorized (token invalid/expired)
+          if (err.response && err.response.status === 401) {
+            console.warn('[AuthContext] Session expired or invalid token');
+            if (isMounted) handleLogout();
+          } else {
+            // Server might be cold-starting or temporary network glitch: preserve existing cached user
+            console.warn('[AuthContext] Network or cold-start error during verify, retaining cached session:', err.message);
+            if (isMounted && storedUser) {
+              setUser(storedUser);
+            }
+          }
         }
       } else {
-        setUser(null);
-        setToken(null);
+        if (isMounted) {
+          setUser(null);
+          setToken(null);
+        }
       }
-      setIsLoading(false);
+
+      if (isMounted) {
+        setIsLoading(false);
+      }
     };
 
     initializeAuth();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   /**
@@ -58,6 +82,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       const message =
         error.response?.data?.message ||
+        error.customMessage ||
         error.message ||
         'Unable to connect to the server. Please check your connection.';
       return { success: false, message };
@@ -86,6 +111,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       const message =
         error.response?.data?.message ||
+        error.customMessage ||
         error.message ||
         'Unable to connect to the server. Please check your connection.';
       return { success: false, message };
@@ -95,8 +121,12 @@ export const AuthProvider = ({ children }) => {
   /**
    * Log out user
    */
-  const logout = () => {
-    handleLogout();
+  const logout = async () => {
+    try {
+      await authService.logout();
+    } finally {
+      handleLogout();
+    }
   };
 
 

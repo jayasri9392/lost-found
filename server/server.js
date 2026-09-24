@@ -13,33 +13,70 @@ const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 // Initialize Express app
 const app = express();
 
-// Middlewares
-const clientUrls = process.env.CLIENT_URL
+// Configure allowed origins
+const envClientUrls = process.env.CLIENT_URL
   ? process.env.CLIENT_URL.split(',').map((u) => u.trim().replace(/\/$/, ''))
   : [];
 
-const allowedOrigins = [
-  ...clientUrls,
+const knownOrigins = [
+  ...envClientUrls,
+  'https://lost-found-mu-bay.vercel.app',
+  'https://lost-found-git-main-jayasris-projects-d2ecf1d8.vercel.app',
+  'https://lost-found-39coz1cjo-jayasris-projects-d2ecf1d8.vercel.app',
   'http://localhost:5173',
   'http://127.0.0.1:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:4173',
+  'http://127.0.0.1:4173',
 ];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, Postman)
-      if (!origin) return callback(null, true);
-      const cleanOrigin = origin.replace(/\/$/, '');
-      if (allowedOrigins.includes(cleanOrigin)) {
-        return callback(null, true);
-      }
-      return callback(null, true); // Dev-friendly fallback
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow server-to-server, curl, Postman, mobile apps with no origin
+    if (!origin) return callback(null, true);
+
+    const cleanOrigin = origin.replace(/\/$/, '');
+
+    // 1. Direct match with known origins list
+    if (knownOrigins.includes(cleanOrigin)) {
+      return callback(null, origin);
+    }
+
+    // 2. Allow all Vercel deployments (main, previews, branch deploys)
+    if (/^https:\/\/([a-zA-Z0-9_-]+\.)*vercel\.app$/.test(cleanOrigin)) {
+      return callback(null, origin);
+    }
+
+    // 3. Allow all Render deployments
+    if (/^https:\/\/([a-zA-Z0-9_-]+\.)*onrender\.com$/.test(cleanOrigin)) {
+      return callback(null, origin);
+    }
+
+    // 4. Allow any localhost or 127.0.0.1 port in development
+    if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(cleanOrigin)) {
+      return callback(null, origin);
+    }
+
+    // Dev-friendly fallback: allow the requesting origin
+    return callback(null, origin);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+  ],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400, // 24 hours preflight cache
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

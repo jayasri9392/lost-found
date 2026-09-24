@@ -39,6 +39,19 @@ export const authService = {
   },
 
   /**
+   * Log out user - attempt backend notification and clear local session
+   */
+  async logout() {
+    try {
+      await API.post('/auth/logout');
+    } catch {
+      // Ignored - local session clear is the primary action
+    } finally {
+      this.clearSession();
+    }
+  },
+
+  /**
    * Remove session from localStorage
    */
   clearSession() {

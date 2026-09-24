@@ -165,8 +165,21 @@ const getMe = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Log out user / clear session
+ * @route   POST /api/auth/logout
+ * @access  Public
+ */
+const logoutUser = async (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'User logged out successfully',
+  });
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getMe,
+  logoutUser,
 };
