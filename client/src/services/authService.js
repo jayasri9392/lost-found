@@ -31,6 +31,20 @@ export const authService = {
   },
 
   /**
+   * Update profile information
+   * @param {Object} profileData - { name, phone, bio, avatar, currentPassword, newPassword }
+   */
+  async updateProfile(profileData) {
+    const response = await API.put('/auth/profile', profileData);
+    if (response.data && response.data.data) {
+      const storedUser = this.getUser();
+      const updatedUser = { ...storedUser, ...response.data.data };
+      this.saveSession(this.getToken(), updatedUser);
+    }
+    return response.data;
+  },
+
+  /**
    * Save session in localStorage
    */
   saveSession(token, user) {

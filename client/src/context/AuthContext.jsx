@@ -4,6 +4,7 @@ import authService from '../services/authService';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
+  // Initialize directly from localStorage so first render is already correct
   const [user, setUser] = useState(authService.getUser());
   const [token, setToken] = useState(authService.getToken());
   const [isLoading, setIsLoading] = useState(true);
@@ -14,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
   };
 
-  // Verify stored session on app mount
+  // Verify the stored session is still valid on every app mount/refresh
   useEffect(() => {
     let isMounted = true;
 
@@ -27,22 +28,31 @@ export const AuthProvider = ({ children }) => {
           const res = await authService.getMe();
           if (isMounted) {
             if (res.success && res.data) {
+              // Always re-sync both user AND token state from storage
               setUser(res.data);
+              setToken(storedToken);
               authService.saveSession(storedToken, res.data);
             } else {
               handleLogout();
             }
           }
         } catch (err) {
-          // Only clear session if explicitly unauthorized (token invalid/expired)
+          if (!isMounted) return;
+
           if (err.response && err.response.status === 401) {
-            console.warn('[AuthContext] Session expired or invalid token');
-            if (isMounted) handleLogout();
+            // Token explicitly rejected by server — clear everything
+            console.warn('[AuthContext] Session expired or invalid token — logging out');
+            handleLogout();
           } else {
-            // Server might be cold-starting or temporary network glitch: preserve existing cached user
-            console.warn('[AuthContext] Network or cold-start error during verify, retaining cached session:', err.message);
-            if (isMounted && storedUser) {
+            // Network error / cold-start timeout — preserve cached session so
+            // the user isn't logged out just because the server was slow
+            console.warn(
+              '[AuthContext] Network or cold-start error, retaining cached session:',
+              err.message
+            );
+            if (storedUser && storedToken) {
               setUser(storedUser);
+              setToken(storedToken);
             }
           }
         }
@@ -66,7 +76,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   /**
-   * Log in user
+   * Log in user — saves session and updates React state
    */
   const login = async (email, password) => {
     try {
@@ -90,7 +100,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
-   * Register user
+   * Register user — auto-logs in after success
    */
   const register = async (name, email, password, confirmPassword) => {
     try {
@@ -119,21 +129,25 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
-   * Log out user
+   * Log out user — clears both server session and local state
    */
   const logout = async () => {
     try {
       await authService.logout();
+    } catch {
+      // Ignore logout API errors — local state clear is primary
     } finally {
       handleLogout();
     }
   };
 
+  // isAuthenticated is true only when BOTH user object AND token exist
+  const isAuthenticated = Boolean(user && token);
 
   const value = {
     user,
     token,
-    isAuthenticated: Boolean(user && token),
+    isAuthenticated,
     isLoading,
     login,
     register,
@@ -144,7 +158,7 @@ export const AuthProvider = ({ children }) => {
 };
 
 /**
- * Custom hook to use AuthContext
+ * Custom hook to consume AuthContext
  */
 export const useAuth = () => {
   const context = useContext(AuthContext);

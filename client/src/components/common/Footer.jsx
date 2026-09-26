@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
-    <footer className="bg-slate-900 border-t border-slate-800 text-slate-400 py-12 mt-auto">
+    <footer className="relative z-10 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 text-slate-400 py-12 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand Info */}
@@ -24,27 +24,35 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Core Modules Roadmap */}
+          {/* Platform Modules — all live */}
           <div>
             <h4 className="text-white text-xs font-semibold uppercase tracking-wider mb-3">
               Platform Modules
             </h4>
             <ul className="space-y-2 text-xs">
               <li className="flex items-center gap-2 text-emerald-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                <span>JWT Authentication &amp; RBAC</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                <Link to="/login" className="hover:text-white transition-colors">JWT Authentication &amp; RBAC</Link>
               </li>
-              <li className="flex items-center gap-2 text-slate-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-600"></span>
-                <span>Lost Item Reporting (Phase 2)</span>
+              <li className="flex items-center gap-2 text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                <Link to="/report-lost" className="hover:text-white transition-colors">Lost Item Reporting</Link>
               </li>
-              <li className="flex items-center gap-2 text-slate-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-600"></span>
-                <span>Found Item Registry (Phase 2)</span>
+              <li className="flex items-center gap-2 text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                <Link to="/report-found" className="hover:text-white transition-colors">Found Item Registry</Link>
               </li>
-              <li className="flex items-center gap-2 text-slate-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-600"></span>
-                <span>Intelligent AI Matching (Phase 3)</span>
+              <li className="flex items-center gap-2 text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                <Link to="/search" className="hover:text-white transition-colors">Intelligent AI Matching &amp; Search</Link>
+              </li>
+              <li className="flex items-center gap-2 text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                <Link to="/claims" className="hover:text-white transition-colors">Claims &amp; Verification</Link>
+              </li>
+              <li className="flex items-center gap-2 text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                <Link to="/notifications" className="hover:text-white transition-colors">Real-time Notifications</Link>
               </li>
             </ul>
           </div>
@@ -62,6 +70,16 @@ const Footer = () => {
               <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">Tailwind CSS</span>
               <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">JWT &amp; Bcrypt</span>
             </div>
+
+            <h4 className="text-white text-xs font-semibold uppercase tracking-wider mb-3 mt-6">
+              Quick Links
+            </h4>
+            <ul className="space-y-2 text-xs">
+              <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
+              <li><Link to="/search" className="hover:text-white transition-colors">Search Database</Link></li>
+              <li><Link to="/report" className="hover:text-white transition-colors">Report an Item</Link></li>
+              <li><Link to="/dashboard" className="hover:text-white transition-colors">Dashboard</Link></li>
+            </ul>
           </div>
         </div>
 

@@ -8,6 +8,16 @@ dotenv.config();
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const healthRoutes = require('./routes/healthRoutes');
+const lostItemRoutes = require('./routes/lostItemRoutes');
+const foundItemRoutes = require('./routes/foundItemRoutes');
+const claimRoutes = require('./routes/claimRoutes');
+const matchingRoutes = require('./routes/matchingRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const reportRoutes = require('./routes/reportRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const searchRoutes = require('./routes/searchRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 // Initialize Express app
@@ -78,8 +88,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Root route
 app.get('/', (req, res) => {
@@ -92,6 +102,16 @@ app.get('/', (req, res) => {
 // API Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/lost-items', lostItemRoutes);
+app.use('/api/found-items', foundItemRoutes);
+app.use('/api/claims', claimRoutes);
+app.use('/api/matches', matchingRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/search', searchRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Error Middlewares
 app.use(notFound);

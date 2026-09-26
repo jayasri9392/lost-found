@@ -10,6 +10,16 @@ export default defineConfig({
   ],
   server: {
     port: 5173,
-    open: false,
+    open: true,        // auto-open browser on start
+    strictPort: false, // try next port if 5173 is taken
+    hmr: {
+      overlay: true,   // show build errors in browser overlay
+    },
+  },
+  preview: {
+    port: 4173,
+  },
+  build: {
+    sourcemap: false,
   },
 });

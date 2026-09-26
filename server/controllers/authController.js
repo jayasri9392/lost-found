@@ -166,6 +166,71 @@ const getMe = async (req, res, next) => {
 };
 
 /**
+ * @desc    Update user profile
+ * @route   PUT /api/auth/me or PUT /api/auth/profile
+ * @access  Private (Protected by JWT)
+ */
+const updateProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select('+password');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    const { name, phone, bio, avatar, currentPassword, newPassword } = req.body;
+
+    if (name) user.name = name.trim();
+    if (phone !== undefined) user.phone = phone.trim();
+    if (bio !== undefined) user.bio = bio.trim();
+    if (avatar !== undefined) user.avatar = avatar;
+
+    // Optional password change
+    if (newPassword) {
+      if (!currentPassword) {
+        return res.status(400).json({
+          success: false,
+          message: 'Current password is required to set a new password',
+        });
+      }
+
+      const isMatch = await user.matchPassword(currentPassword);
+      if (!isMatch) {
+        return res.status(400).json({
+          success: false,
+          message: 'Current password does not match',
+        });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({
+          success: false,
+          message: 'New password must be at least 6 characters long',
+        });
+      }
+
+      user.password = newPassword;
+    }
+
+    await user.save();
+
+    // Fetch refreshed user without password
+    const updatedUser = await User.findById(user._id).select('-password');
+
+    return res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: updatedUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * @desc    Log out user / clear session
  * @route   POST /api/auth/logout
  * @access  Public
@@ -181,5 +246,6 @@ module.exports = {
   registerUser,
   loginUser,
   getMe,
+  updateProfile,
   logoutUser,
 };

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <!-- Intelligent Radar Search Pin for ILFN -->
+  <!-- Outer Search Pin with Central Radar Aperture (evenodd compound path) -->
+  <path fill-rule="evenodd" clip-rule="evenodd" d="
+    M 256 460
+    C 246 440 126 295 126 190
+    C 126 118.2 184.2 60 256 60
+    C 327.8 60 386 118.2 386 190
+    C 386 295 266 440 256 460 Z
+    M 256 128
+    C 221.8 128 194 155.8 194 190
+    C 194 224.2 221.8 252 256 252
+    C 290.2 252 318 224.2 318 190
+    C 318 155.8 290.2 128 256 128 Z
+  " fill="#ffffff"/>
+
+  <!-- Central Intelligent Radar Core Dot -->
+  <circle cx="256" cy="190" r="22" fill="#ffffff"/>
+
+  <!-- Radar Scanner Signal Arcs (Left and Right) -->
+  <!-- Left Inner Arc -->
+  <path d="M 96 130 C 72 165 72 215 96 250" stroke="#ffffff" stroke-width="22" stroke-linecap="round" fill="none"/>
+  <!-- Right Inner Arc -->
+  <path d="M 416 130 C 440 165 440 215 416 250" stroke="#ffffff" stroke-width="22" stroke-linecap="round" fill="none"/>
+
+  <!-- Top Intelligent Pulse Crosshair -->
+  <path d="M 256 20 L 256 46" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+</svg>

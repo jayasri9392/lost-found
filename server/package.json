@@ -8,6 +8,7 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "test:auth": "node test-auth.js",
+    "test:all": "node test-all-modules.js",
     "test:prod": "node verify-prod.js"
   },
   "keywords": [
@@ -21,10 +22,12 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.11.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.9.5"
+    "mongoose": "^8.9.5",
+    "multer": "^2.4.0"
   }
 }
